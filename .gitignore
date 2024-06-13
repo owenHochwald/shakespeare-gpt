@@ -1,0 +1,11 @@
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment
+.venv/
+
+# Ignore other typical files and directories
+*.log
+*.tmp
+.DS_Store
