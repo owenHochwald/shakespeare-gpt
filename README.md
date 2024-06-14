@@ -5,7 +5,8 @@ Welcome to my Deep learning project! This project is designed to create a langua
 
 ## Project Structure
 The project is structured as follows:
-- **models/bigram.py**: A simpler bigram model.
+- **models/bigram.py**: A simpler bigram model without token context.
+- **models/bigram_v2.py**: A more complex bigram model with self-attention and context. 
 - **models/gpt.py**: A more complex GPT-like model.
 - **main.ipynb**: Jupiter Notebook containing the code for each model and steps broken down into bite sized chuncks.
 
@@ -28,13 +29,17 @@ python bigram.py
 ```
 
 ```sh
+python bigram_v2.py
+```
+
+```sh
 python gpt.py
 ```
 
 ## Results
 The trained models can generate text that  resembles the style of Shakespeare. Here are some examples of generated text:
 
-**Bigram Model Output:**
+**Bigram Model V1 Output:**
 ```
 od nos CAy go ghanoray t, co haringoudrou clethe k,LARof fr werar,
 Is fa!
@@ -47,6 +52,28 @@ SBRI he the f wendleindd t acoe ts ansu, thy ppr h.QULY:
 KIIsqu pr odEd ch,
 APrnes ouse bll owhored miner t ooon'stoume bupromo! fifoveghind hiarnge s.
 MI aswimy or m, wardd tw'To tee abifewoetsphin sed The...
+```
+
+
+**Bigram Model V2 Output:**
+```
+Wes le isen.
+Woto teven INGO, ous into CYedd shou maithe ert thethens the the del ede cksy ow? Wlouby aicecat tisall wor
+G'imemonou mar ee hacreancad hontrt had wousk ucavere.
+
+Baraghe lfousto beme,
+S m; ten gh;
+S:
+Ano ice de bay alysathef beatireplim serbeais I fard
+Sy,
+Me hallil:
+DWAR: us,
+Wte hse aecathate, parrise in hr'd pat
+ERY:
+Bf bul walde betl'ts I yshore grest atre ciak aloo; wo fart hets atl.
+
+That at Wh kear ben.
+ hend.
 ```
 
 **GPT Model Output:**
