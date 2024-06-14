@@ -65,6 +65,8 @@ def estimate_loss():
     model.train()
     return out
 
+
+
 class Head(nn.Module):
     """ creating one head of self attention"""
 
@@ -93,8 +95,20 @@ class Head(nn.Module):
         v = self.value(x) # (B,T,C)
         out = weights @ v # (B,T,T) @ (B,T,C) -> (B,T,C)
         return out
+    
+class MultiHeadAttention(nn.Module):
+    """ Multi-head self-attention block in parallel"""
+    
+    def __init__(self, num_heads, head_size):
+        super().__init__()
+        # running heads in parallel in a list
+        self.heads = nn.ModuleList([Head(head_size) for i in range(num_heads)])
+        
+    def forward(self,x):
+        # concatenating outputs over channel dimension
+        return torch.cat([h(x) for h in self.heads], dim=-1)
 
-# bigram model with one head of self attention
+# bigram model with multiple heads of self attention
 class BigramLanguageModel(nn.Module):
 
     def __init__(self, vocab_size):
@@ -106,7 +120,7 @@ class BigramLanguageModel(nn.Module):
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
         
         # creating self attention head
-        self.sa_head = Head(n_embd)
+        self.sa_heads = MultiHeadAttention(4, n_embd//4) # example of 4 heads of 8-dim (context size) self-attention blocks
         # to go from tok_emb to logits, we need a linear layer
         self.lm_head = nn.Linear(n_embd, vocab_size)
         
@@ -121,7 +135,7 @@ class BigramLanguageModel(nn.Module):
         
         # x holds token identity and position which they occur
         x=tok_emb+pos_emb #(B,T,C)
-        x = self.sa_head(x) # applying one head of self attention to the token and position embeddings
+        x = self.sa_heads(x) # applying one head of self attention to the token and position embeddings
         
         # decoder block to get logits
         logits = self.lm_head(x) # (B,T,vocab_size)
