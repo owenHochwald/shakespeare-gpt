@@ -107,6 +107,18 @@ class MultiHeadAttention(nn.Module):
     def forward(self,x):
         # concatenating outputs over channel dimension
         return torch.cat([h(x) for h in self.heads], dim=-1)
+    
+class FeedFoward(nn.Module):
+    """feed foward function with linear layer followed by non-linear aspects"""
+    def __init__(self,n_embd):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(n_embd,n_embd),
+            nn.ReLU(),
+        )
+        
+    def forward(self,x):
+        return self.net(x)
 
 # bigram model with multiple heads of self attention
 class BigramLanguageModel(nn.Module):
@@ -121,6 +133,8 @@ class BigramLanguageModel(nn.Module):
         
         # creating self attention head
         self.sa_heads = MultiHeadAttention(4, n_embd//4) # example of 4 heads of 8-dim (context size) self-attention blocks
+        # feed foward after self attending, feed foward is the "thinking" after the tokens "communicate" with self-attention
+        self.ffw = FeedFoward(n_embd)
         # to go from tok_emb to logits, we need a linear layer
         self.lm_head = nn.Linear(n_embd, vocab_size)
         
@@ -136,6 +150,7 @@ class BigramLanguageModel(nn.Module):
         # x holds token identity and position which they occur
         x=tok_emb+pos_emb #(B,T,C)
         x = self.sa_heads(x) # applying one head of self attention to the token and position embeddings
+        x = self.ffw(x)
         
         # decoder block to get logits
         logits = self.lm_head(x) # (B,T,vocab_size)
