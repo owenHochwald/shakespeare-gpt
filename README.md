@@ -78,23 +78,23 @@ That at Wh kear ben.
 
 **Bigram Model V3 Output:**
 ```
-We! le ises.
-Wmanter.
-Thougs to soovte Candd shou mait tiestlintthens the the dol ene cksy ba?
-Wlouby aicecke tiss, for with sat ous ciee thaccearned Go mring porouskin?
+Bay.
+A thill shat cof he hot mus finut twell ad I four shat son yald hat lods guks of som!
 
-Fre.
+CSins
+Gat son?-- dand un.
 
-Barage plftinto leme,
-Sem; teer be sosetr ice do bay allsathe wome issplim serbeais I fave
-Sy, himes.
-DR:
-Dever girn te hee a'llalnte, parrise in hrenter Cout hucke.
-Whald me bloth I your angrest atre ciak aloo;
-And meps, theat is bout and goe
-JBKTCHEN E Wey;
-KTh'llfhish thal of waence pir ont blod aste.
-Of cearues fo boe
+DAYOAUOMEN:
+I dealll crefor hre bry epale gaeew are:
+Thath, leanven-tford.
+
+METI:
+Fran thacepte, digns cot, Cow,
+An pped lorcill air woth' that to thred? I tlill!
+
+BUTA:
+Mrows,
+What loun be ping pe, aal ry fat, he cwor tend the to tis argito-, netoll bratens? I whit me flot nentes bre; manuth frifperen the hear
 ```
 
 **GPT Model Output:**
