@@ -108,7 +108,7 @@ class MultiHeadAttention(nn.Module):
         # concatenating outputs over channel dimension
         return torch.cat([h(x) for h in self.heads], dim=-1)
     
-class FeedFoward(nn.Module):
+class FeedForward(nn.Module):
     """feed foward function with linear layer followed by non-linear aspects"""
     def __init__(self,n_embd):
         super().__init__()
@@ -119,6 +119,25 @@ class FeedFoward(nn.Module):
         
     def forward(self,x):
         return self.net(x)
+    
+class Block(nn.Module):
+    """Creating transformer block - token communication followed with computation for prediction"""
+    
+    def __init__(self,n_embd, n_head):
+        # n_emd: embedding dimension
+        # n_head: the number of desired heads - group size
+        super().__init__()
+        head_size = n_embd // n_head
+        # communication
+        self.sa = MultiHeadAttention(n_head, head_size)
+        # computation done independently with feeding forward
+        self.ffwd = FeedForward(n_embd)
+        
+        def forward(self,x):
+            x = self.sa(x)
+            x = self.ffwd(x)
+            return x
+        
 
 # bigram model with multiple heads of self attention
 class BigramLanguageModel(nn.Module):
@@ -131,10 +150,12 @@ class BigramLanguageModel(nn.Module):
         # encoding identities and position of tokens
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
         
-        # creating self attention head
-        self.sa_heads = MultiHeadAttention(4, n_embd//4) # example of 4 heads of 8-dim (context size) self-attention blocks
-        # feed foward after self attending, feed foward is the "thinking" after the tokens "communicate" with self-attention
-        self.ffw = FeedFoward(n_embd)
+        # blocked version to intersperse communication and computation many times
+        self.blocks = nn.Sequential(
+            Block(n_embd, n_head=4),
+            Block(n_embd, n_head=4),
+            Block(n_embd, n_head=4),
+        )
         # to go from tok_emb to logits, we need a linear layer
         self.lm_head = nn.Linear(n_embd, vocab_size)
         
