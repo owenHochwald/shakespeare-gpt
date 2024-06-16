@@ -103,10 +103,15 @@ class MultiHeadAttention(nn.Module):
         super().__init__()
         # running heads in parallel in a list
         self.heads = nn.ModuleList([Head(head_size) for i in range(num_heads)])
+        # adding projects
+        self.proj = nn.Linear(n_embd, n_embd)
         
     def forward(self,x):
-        # concatenating outputs over channel dimension
-        return torch.cat([h(x) for h in self.heads], dim=-1)
+        # concatenating self attention outputs over channel dimension
+        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        # applying project -> linear outcome of the Linear layer
+        out = self.proj(out)
+        return out
     
 class FeedForward(nn.Module):
     """feed foward function with linear layer followed by non-linear aspects"""
@@ -115,6 +120,9 @@ class FeedForward(nn.Module):
         self.net = nn.Sequential(
             nn.Linear(n_embd,n_embd),
             nn.ReLU(),
+            # project layer for residual pathway
+            nn.Linear(n_embd,n_embd),
+            
         )
         
     def forward(self,x):
@@ -134,8 +142,8 @@ class Block(nn.Module):
         self.ffwd = FeedForward(n_embd)
         
         def forward(self,x):
-            x = self.sa(x)
-            x = self.ffwd(x)
+            x = x + self.sa(x)
+            x = x + self.ffwd(x)
             return x
         
 
