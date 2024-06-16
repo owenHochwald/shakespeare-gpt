@@ -110,3 +110,9 @@ His canon 'gainst self-slaughter! O God! God!
 For any questions or suggestions, please feel free to contact me at [owenhochwald@gmail.com].
 
 Thank you for visiting my project! I hope you find it interesting and informative.
+
+## References
+- [Shakespeare's Works](https://www.gutenberg.org/files/100/100-h/100-h.htm)
+- [PyTorch](https://pytorch.org/)
+- [Attention Is All You Need Paper](https://arxiv.org/abs/1706.03762)
+
