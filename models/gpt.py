@@ -118,10 +118,11 @@ class FeedForward(nn.Module):
     def __init__(self,n_embd):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Linear(n_embd,n_embd),
+            # growing residual block layer by multiple of 4
+            nn.Linear(n_embd,4*n_embd),
             nn.ReLU(),
             # project layer for residual pathway
-            nn.Linear(n_embd,n_embd),
+            nn.Linear(4*n_embd,n_embd),
             
         )
         
