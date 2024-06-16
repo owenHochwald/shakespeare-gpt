@@ -3,16 +3,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # hyperparameter settings
-batch_size = 32 # number of independent sequences to process in parallel
-block_size = 8 # context length
+batch_size = 64 # number of independent sequences to process in parallel
+block_size = 256 # context length
 max_iters = 5000 # number of times to train on the whole dataset
 eval_interval = 500
 # decreased learning rate, self-attention doesn't work with high LR
-learning_rate = 1e-3 
+learning_rate = 3e-4
 device = 'cuda' if torch.cuda.is_available() else 'cpu' # using GPU if available
 eval_iters = 200
 # 32 dim embedding
-n_embd = 32
+n_embd = 384
+n_head = 6
+n_layer = 6
+dropout = 0.2
+
 
 torch.manual_seed(1337)
 # vocabulary size
@@ -20,19 +24,15 @@ torch.manual_seed(1337)
 # importing dataset
 with open('dataset/input.txt', 'r', encoding='utf-8') as f:
     text=f.read()
-    
 # developing vocab from the dataset
 vocab = sorted(set(text))
 vocab_size = len(vocab)
-
 # creating the vocab lookup table from string to int
 stoi = { ch:i for i,ch in enumerate(vocab) }
 itos = { i:ch for i,ch in enumerate(vocab) }
-
 # encoding and decoding functions for this lookup table
 encode = lambda s: [stoi[c] for c in s] 
 decode = lambda l: ''.join([itos[i] for i in l]) 
-
 # training and validation dataset splits
 data = torch.tensor(encode(text), dtype=torch.long)
 n = int(len(data) * 0.9)
@@ -46,7 +46,6 @@ def get_batch(split):
     x = torch.stack([data[i:i+block_size] for i in ix])
     y = torch.stack([data[i+1:i+block_size+1] for i in ix])
     return x, y
-
 
 @torch.no_grad()
 def estimate_loss():
@@ -65,8 +64,6 @@ def estimate_loss():
     model.train()
     return out
 
-
-
 class Head(nn.Module):
     """ creating one head of self attention"""
 
@@ -79,6 +76,8 @@ class Head(nn.Module):
         # creating lower triangular matrix
         self.register_buffer('tril', torch.tril(torch.ones(block_size,block_size)))
         
+        self.dropout = nn.Dropout(dropout)
+        
     # implementation of the blocks from the jupiter notebook    
     def forward(self, x):
         B,T,C = x.shape
@@ -86,11 +85,12 @@ class Head(nn.Module):
         q = self.query(x) # (B,T,C)
         # calculating attention scores ("likelihood of each token")
         # normalizing to get scaled attention scores
-        weights = q @ k.transpose(-2,-1) * k.shape[-1]**-0.5 # (B,T,C) @ (B,C,T) -> (B,T,T)
+        weights = q @ k.transpose(-2,-1) * C**-0.5 # (B,T,C) @ (B,C,T) -> (B,T,T)
         # decoder block: masking to make sure future tokens don't attend to past tokens
-        weights = weights.masked_fill(self.tril[:T,:T] == 0, float('-inf'))
+        weights = weights.masked_fill(self.tril[:T, :T] == 0, float('-inf'))
         # softmax acts as a normalizer, sums elements in row and exponentiates them
         weights = F.softmax(weights, dim=-1) # (B,T,T)
+        weights = self.dropout(weights)
         # preforming weighted aggregation
         v = self.value(x) # (B,T,C)
         out = weights @ v # (B,T,T) @ (B,T,C) -> (B,T,C)
@@ -102,19 +102,20 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, num_heads, head_size):
         super().__init__()
         # running heads in parallel in a list
-        self.heads = nn.ModuleList([Head(head_size) for i in range(num_heads)])
+        self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
         # adding projects
         self.proj = nn.Linear(n_embd, n_embd)
+        self.dropout = nn.Dropout(dropout)
         
     def forward(self,x):
         # concatenating self attention outputs over channel dimension
         out = torch.cat([h(x) for h in self.heads], dim=-1)
         # applying project -> linear outcome of the Linear layer
-        out = self.proj(out)
+        out = self.dropout(self.proj(out))
         return out
     
 class FeedForward(nn.Module):
-    """feed foward function with linear layer followed by non-linear aspects"""
+    """feed forward function with linear layer followed by non-linear aspects"""
     def __init__(self,n_embd):
         super().__init__()
         self.net = nn.Sequential(
@@ -123,7 +124,7 @@ class FeedForward(nn.Module):
             nn.ReLU(),
             # project layer for residual pathway
             nn.Linear(4*n_embd,n_embd),
-            
+            nn.Dropout(dropout),
         )
         
     def forward(self,x):
@@ -141,11 +142,15 @@ class Block(nn.Module):
         self.sa = MultiHeadAttention(n_head, head_size)
         # computation done independently with feeding forward
         self.ffwd = FeedForward(n_embd)
+        # normalizing layers
+        self.ln1 = nn.LayerNorm(n_embd)
+        self.ln2 = nn.LayerNorm(n_embd)
         
-        def forward(self,x):
-            x = x + self.sa(x)
-            x = x + self.ffwd(x)
-            return x
+        
+    def forward(self, x):
+        x = x + self.sa(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
+        return x
         
 
 # bigram model with multiple heads of self attention
@@ -158,16 +163,10 @@ class BigramLanguageModel(nn.Module):
         
         # encoding identities and position of tokens
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
-        
-        # blocked version to intersperse communication and computation many times
-        self.blocks = nn.Sequential(
-            Block(n_embd, n_head=4),
-            Block(n_embd, n_head=4),
-            Block(n_embd, n_head=4),
-        )
-        # to go from tok_emb to logits, we need a linear layer
+        self.blocks = nn.Sequential(*[Block(n_embd, n_head=n_head) for _ in range(n_layer)])
+        self.ln_f = nn.LayerNorm(n_embd)
+        # decode layer
         self.lm_head = nn.Linear(n_embd, vocab_size)
-        
 
     def forward(self, idx, targets=None):
         B,T = idx.shape
@@ -178,9 +177,8 @@ class BigramLanguageModel(nn.Module):
         pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T,C)\
         
         # x holds token identity and position which they occur
-        x=tok_emb+pos_emb #(B,T,C)
-        x = self.sa_heads(x) # applying one head of self attention to the token and position embeddings
-        x = self.ffw(x)
+        x = tok_emb + pos_emb # (B,T,C)
+        x = self.blocks(x) # (B,T,C)
         
         # decoder block to get logits
         logits = self.lm_head(x) # (B,T,vocab_size)
@@ -225,7 +223,7 @@ optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 for iter in range(max_iters):
 
     # every once in a while evaluate the loss on train and val sets
-    if iter % eval_interval == 0:
+    if iter % eval_interval == 0 or iter == max_iters - 1:
         losses = estimate_loss()
         print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
 
@@ -236,7 +234,6 @@ for iter in range(max_iters):
     logits, loss = model(xb, yb)
     
     # backward pass
-    
     # set gradients to zero for current pass
     optimizer.zero_grad(set_to_none=True)
     # backpropagate
