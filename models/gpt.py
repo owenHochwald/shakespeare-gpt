@@ -154,7 +154,7 @@ class Block(nn.Module):
         
 
 # bigram model with multiple heads of self attention
-class BigramLanguageModel(nn.Module):
+class GPTLanguageModel(nn.Module):
 
     def __init__(self, vocab_size):
         super().__init__()
@@ -167,6 +167,17 @@ class BigramLanguageModel(nn.Module):
         self.ln_f = nn.LayerNorm(n_embd)
         # decode layer
         self.lm_head = nn.Linear(n_embd, vocab_size)
+        
+        # better model init
+        self.apply(self._init_weights)
+        
+        def _init_weights(self, module):
+            if isinstance(module, nn.Linear):
+                torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+                if module.bias is not None:
+                    torch.nn.init.zeros_(module.bias)
+            elif isinstance(module, nn.Embedding):
+                torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
     def forward(self, idx, targets=None):
         B,T = idx.shape
@@ -212,7 +223,7 @@ class BigramLanguageModel(nn.Module):
             idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
         return idx
 
-model = BigramLanguageModel(vocab_size)
+model = GPTLanguageModel(vocab_size)
 # when gpu is used, we need to move the model to the GPU so that calculations happen there
 m = model.to(device)
 

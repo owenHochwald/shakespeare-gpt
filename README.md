@@ -6,14 +6,12 @@ Welcome to my Deep learning project! This project is designed to create a langua
 ## Project Structure
 The project is structured as follows:
 - **models/bigram.py**: A simpler bigram model without token context. Loss: ~2.5
-- **models/bigram_v2.py**: A more complex bigram model with self-attention and context. ~2.4
-- **models/bigram_v3.py**: A complex bigram model with multi-headed self-attention blocks. ~2.2
-- **models/gpt.py**: A more complex GPT-like model.
+- **models/gpt.py**: A more complex GPT-like model with multi-headed self-attention blocks, residual connections, dropout layers, layer norms, positional embeddings, and more. ~1
 - **main.ipynb**: Jupiter Notebook containing the code for each model and steps broken down into bite sized chuncks.
 
 ## Features
 - **Bigram Model**: A foundational model that predicts the next character based on the previous one, without taking the preceding tokens into context.
-- **GPT Model**: An advanced model that uses all previous tokens in the context window to predict the next character.
+- **GPT Model**: An advanced model that uses all previous tokens in the context window (adjustable) to predict the next character.
 - **Character-level Tokenization**: A simple and effective approach to tokenizing text where each character in the vocab is represented by a unique number.
 
 ## Installation
@@ -32,8 +30,6 @@ python bigram.py
 ```sh
 python gpt.py
 ```
-
-and so on for your desired model...
 
 ## Results
 The trained models can generate text that  resembles the style of Shakespeare. Here are some examples of generated text:
@@ -54,7 +50,7 @@ MI aswimy or m, wardd tw'To tee abifewoetsphin sed The...
 ```
 
 
-**Bigram Model V2 Output:**
+**GPT Model V1 Output:**
 ```
 Wes le isen.
 Woto teven INGO, ous into CYedd shou maithe ert thethens the the del ede cksy ow? Wlouby aicecat tisall wor
@@ -76,7 +72,7 @@ That at Wh kear ben.
 ```
 
 
-**Bigram Model V3 Output:**
+**GPT Model V2 Output:**
 ```
 Bay.
 A thill shat cof he hot mus finut twell ad I four shat son yald hat lods guks of som!
@@ -97,7 +93,7 @@ Mrows,
 What loun be ping pe, aal ry fat, he cwor tend the to tis argito-, netoll bratens? I whit me flot nentes bre; manuth frifperen the hear
 ```
 
-**GPT Model Output:**
+**GPT Model Final Version Output:**
 ```
 O, that this too too solid flesh would melt,
 Thaw and resolve itself into a dew!
