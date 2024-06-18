@@ -5,8 +5,9 @@ Welcome to my Deep learning project! This project is designed to create a langua
 
 ## Project Structure
 The project is structured as follows:
-- **models/bigram.py**: A simpler bigram model without token context. Loss: ~2.5
-- **models/gpt.py**: A more complex GPT-like model with around 10M parameters. Includes multi-headed self-attention blocks, residual connections, dropout layers, layer norms, positional embeddings, and more. ~1
+- **models/bigram.py**: A simple bigram model without token context. Loss: ~2.5
+- **models/bigram.py**: A bigram model with single block self-attention. Loss: ~2.1
+- **models/gpt.py**: A more complex GPT-like model with around 10M parameters. Includes multi-headed self-attention blocks, residual connections, dropout layers, layer norms, positional embeddings, and more. Loss: ~1.4
 - **main.ipynb**: Jupiter Notebook containing the code for each model and steps broken down into bite sized chuncks.
 
 ## Features
