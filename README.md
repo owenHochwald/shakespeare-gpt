@@ -1,12 +1,12 @@
 # shakespeare-gpt
 
 ## Overview
-Welcome to my Deep learning project! This project is designed to create a language model similar to GPT 2, specifically trained on the first 1 million characters of Shakespeare, hence the name. The goal is to generate text that mimics Shakespeare's unique style. This project I walk through the steps of creating multiple models, each one iterating on the first, to reduce loss and improve model output. One each pass with each following model and additions, our output becomes better and better. We start with a simple bigram model and make our way to a transformer. This project showcases skills in deep learning, natural language processing, and PyTorch.
+Welcome to my Deep learning project! This project is designed to create a language model similar to GPT 3, specifically trained on the first 1 million characters of Shakespeare, hence the name. The goal is to generate text that mimics Shakespeare's unique style. This project I walk through the steps of creating multiple models, each one iterating on the first, to reduce loss and improve model output. This project doesn't focus on any of the fine tuning stages. On each pass with each following model and additions, our output becomes better and better. We start with a simple bigram model and make our way to a transformer. This project showcases skills in deep learning, natural language processing, and PyTorch.
 
 ## Project Structure
 The project is structured as follows:
 - **models/bigram.py**: A simpler bigram model without token context. Loss: ~2.5
-- **models/gpt.py**: A more complex GPT-like model with multi-headed self-attention blocks, residual connections, dropout layers, layer norms, positional embeddings, and more. ~1
+- **models/gpt.py**: A more complex GPT-like model with around 10M parameters. Includes multi-headed self-attention blocks, residual connections, dropout layers, layer norms, positional embeddings, and more. ~1
 - **main.ipynb**: Jupiter Notebook containing the code for each model and steps broken down into bite sized chuncks.
 
 ## Features

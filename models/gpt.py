@@ -168,16 +168,16 @@ class GPTLanguageModel(nn.Module):
         # decode layer
         self.lm_head = nn.Linear(n_embd, vocab_size)
         
-        # better model init
-        self.apply(self._init_weights)
+        # # better model init
+        # self.apply(self._init_weights)
         
-        def _init_weights(self, module):
-            if isinstance(module, nn.Linear):
-                torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
-                if module.bias is not None:
-                    torch.nn.init.zeros_(module.bias)
-            elif isinstance(module, nn.Embedding):
-                torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+        # def _init_weights(self, module):
+        #     if isinstance(module, nn.Linear):
+        #         torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+        #         if module.bias is not None:
+        #             torch.nn.init.zeros_(module.bias)
+        #     elif isinstance(module, nn.Embedding):
+        #         torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
     def forward(self, idx, targets=None):
         B,T = idx.shape
@@ -254,4 +254,4 @@ for iter in range(max_iters):
 
 # generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
-print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
+print(decode(m.generate(context, max_new_tokens=10000)[0].tolist()))
