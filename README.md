@@ -50,7 +50,7 @@ MI aswimy or m, wardd tw'To tee abifewoetsphin sed The...
 ```
 
 
-**GPT Model V1 Output:**
+**Bigram Model V2 Output:**
 ```
 Wes le isen.
 Woto teven INGO, ous into CYedd shou maithe ert thethens the the del ede cksy ow? Wlouby aicecat tisall wor
@@ -72,7 +72,7 @@ That at Wh kear ben.
 ```
 
 
-**GPT Model V2 Output:**
+**GPT Model V1 Output:**
 ```
 Bay.
 A thill shat cof he hot mus finut twell ad I four shat son yald hat lods guks of som!
@@ -95,10 +95,24 @@ What loun be ping pe, aal ry fat, he cwor tend the to tis argito-, netoll braten
 
 **GPT Model Final Version Output:**
 ```
-O, that this too too solid flesh would melt,
-Thaw and resolve itself into a dew!
-Or that the Everlasting had not fix'd
-His canon 'gainst self-slaughter! O God! God!
+KING EDWARD IV:
+'Tis near worthy children, for your lordship as flay.
+Best, with what made her on this face?
+Better leave me in fine ears and heir for;
+A brief and old may be and givish thy grave:
+To be my life,
+And fear thee the woman to these foul duty!
+
+DUKE OF YORK:
+Pardon mayor yourself be longed:
+Alague their laws, and given your cut offinger,
+Stand all asleep you can ear faults;
+Crown thou dear of thee against and up!
+This moonty some prepare merry Poor,
+Even so tell in them a paragment. If he, it had
+The drink easemt sore gentlemen, and
+Caius eseements of courtain: the heir sea would
+safests those own would so sever.
 ```
 
 ## Future Work and Improvement Considerations
